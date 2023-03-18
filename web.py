@@ -1,4 +1,3 @@
-import pyautogui
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -60,11 +59,3 @@ with open("info.p", "rb") as data:
     info = pickle.load(data)
 
 login(info[0], info[1])
-
-# screenWidth, screenHeight = pyautogui.size()
-# i = 0
-# while True:
-#     if i % 5000000 == 0:
-#         currentMouseX, currentMouseY = pyautogui.position()
-#         print(f"{currentMouseX}, {currentMouseY}")
-#     i+=1
