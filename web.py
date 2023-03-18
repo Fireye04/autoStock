@@ -24,6 +24,7 @@ def login(email: str, password: str):
     delay(5)
 
     elem = browser.find_element(By.CLASS_NAME, 'close-btn')  # Find the search box
+    # elem.send_keys(Keys.RETURN)
     elem.click()
 
     loginfo = browser.find_element(By.CLASS_NAME, "profile.logged-out")
