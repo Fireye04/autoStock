@@ -68,6 +68,7 @@ def login() -> bool:
         return False
 
 
+
 def trade():
     if not login():
         return
