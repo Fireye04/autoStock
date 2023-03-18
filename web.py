@@ -45,7 +45,7 @@ def login() -> bool:
         loginfo = browser.find_element(By.LINK_TEXT, "Log In")
         loginfo.click()
 
-        delay(5)
+        delay(3)
 
         typeBox = browser.find_element(By.ID, "username")
         typeBox.send_keys(email)
