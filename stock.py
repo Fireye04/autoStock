@@ -10,13 +10,13 @@ import yfinance as yf
 
 # stock.info output
 #
-# broken for now
+# broken
 
 
 def buy():
     stock = yf.Ticker("INTC")
 
-    price = stock.fast_info
+    price = stock.fast_info["lastPrice"]
     print(price)
 
     return [["INTC", price]]

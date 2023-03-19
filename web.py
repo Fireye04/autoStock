@@ -7,12 +7,14 @@ import time
 
 browser = webdriver.Firefox()
 
+
 def delay(duration):
     for i in range(duration):
         print(i + 1)
         time.sleep(1)
 
     print(" ")
+
 
 # uncomment this to change the acting email and password
 #
@@ -68,12 +70,9 @@ def login() -> bool:
         return False
 
 
-
 def trade():
     if not login():
         return
-
-
 
     inp = input("Quit? ")
     if inp == "y":
