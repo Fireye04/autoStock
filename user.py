@@ -1,11 +1,18 @@
 import pickle
 import yfinance as yf
 
+from web import trade, updateStats
+
+
+
 class User:
     def __init__(self, userName: str, currentFunds: int, currentStockList: [[str, int], ...]):
         self.name = userName
 
         self.funds = currentFunds
+
+        # updates when command is run
+        self.buyingPower = self.funds
 
         # paired list [stock: str, money in stock: int]
         self.stocks = currentStockList
@@ -20,12 +27,19 @@ class User:
 
         self.iterateFunds()
 
-    def buyStock(self, ticker: str, numberOfShares: int):
-        stok = yf.Ticker(ticker).fast_info["lastPrice"]
+        self.netWorth = self.funds + self.fundsInStock
 
+    def updateInfo(self, netWorth, funds, buyingPower, currentStocks):
 
-    def sellStock(self):
-        pass
+        self.funds = funds
+        self.netWorth = netWorth
+        self.buyingPower = buyingPower
+
+        # Ticker, Shares owned, Type (buy/short), current share price, $change, %change, $ value,
+        # total value $change/%change
+        self.stocks = []
+        for stock in currentStocks:
+            self.stocks.append([stock[0], stock[6]])
 
     def setFunds(self, amount: int, increment: bool):
         if increment:
@@ -58,17 +72,27 @@ class User:
             self.fundsInStock += self.stocks[i][1]
 
     def __str__(self):
-        return f"{self.name}'s Stock Profile- \n~~~\nNet Worth- ${self.funds + self.fundsInStock} \n" \
+        return f"{self.name}'s Stock Profile- \n~~~\nNet Worth- ${self.netWorth} \n" \
                f"Funds- ${self.funds} \nMoney In Stocks- ${self.fundsInStock} \nStocks- {self.plainStocks} \n" \
                f"Paired Stocks- {self.stocks}"
 
+
 # uncomment this to change the acting user
 #
-# user = User("Name", 100_000, [[]])
-# with open(user.name + ".p", "wb") as data:
-#     pickle.dump(user, data)
-
-# with open("Name.p", "rb") as data:
-#     user = pickle.load(data)
 #
-# print(user)
+
+
+#
+def main():
+    # user = User("Kai", 100_000, [])
+    # with open(user.name + ".p", "wb") as data:
+    #     pickle.dump(user, data)
+
+    with open("Kai.p", "rb") as data:
+        user = pickle.load(data)
+    print(user)
+
+if __name__ == "__main__":
+    main()
+
+# user.buyStock("INTC", 99)

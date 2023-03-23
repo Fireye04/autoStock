@@ -7,8 +7,6 @@ import atexit
 
 from tradeType import TradeType
 
-browser = webdriver.Firefox()
-
 
 def delay(duration):
     for i in range(duration):
@@ -25,14 +23,8 @@ def delay(duration):
 #     pickle.dump(info, data)
 
 
-with open("info.p", "rb") as data:
-    info = pickle.load(data)
-
-email = info[0]
-password = info[1]
-
-
-def login(website='https://www.marketwatch.com/games/epic-gaymers-class') -> bool:
+def login(browser, email, password,
+          website='https://www.marketwatch.com/games/epic-gaymers-class') -> bool:
     try:
         browser.get(website)
 
@@ -71,8 +63,9 @@ def login(website='https://www.marketwatch.com/games/epic-gaymers-class') -> boo
         return False
 
 
-def trade(ticker: str, shares: int, tType: TradeType, site='https://www.marketwatch.com/games/epic-gaymers-class'):
-    if not login(site):
+def trade(browser, ticker: str, shares: int, tType: TradeType, email, password,
+          site='https://www.marketwatch.com/games/epic-gaymers-class'):
+    if not login(browser, email, password, site):
         return False
 
     try:
@@ -130,13 +123,9 @@ def trade(ticker: str, shares: int, tType: TradeType, site='https://www.marketwa
         browser.quit()
         return False
 
-    inp = input("Quit? ")
-    if inp == "y":
-        browser.quit()
 
-
-def updateStats(site='https://www.marketwatch.com/games/epic-gaymers-class'):
-    if not login(site):
+def updateStats(browser, email, password, site='https://www.marketwatch.com/games/epic-gaymers-class'):
+    if not login(browser, email, password, site):
         return
 
     delay(3)
@@ -159,16 +148,60 @@ def updateStats(site='https://www.marketwatch.com/games/epic-gaymers-class'):
         s = stonk.split("\n")
         stats.append(s)
 
-    # Ticker, Shares owned, Type (buy/short), current share price, $change, %change, $ value, total value $change/%change
+    # Ticker, Shares owned, Type (buy/short), current share price, $change, %change, $ value,
+    # total value $change/%change
     print(stats)
 
     # TODO: Update info.p and user.py to reflect new stats
 
-    inp = input("Quit? ")
-    if inp == "y":
-        browser.quit()
+
+def getStockPrice(browser, ticker: str, email, password,
+                  site='https://www.marketwatch.com/games/epic-gaymers-class'):
+    if not login(browser, email, password, site):
+        return
+
+    delay(3)
+
+    tickerinp = browser.find_element(By.CLASS_NAME, "input--text.is-search.j-miniTrade")
+    tickerinp.send_keys(ticker)
+
+    delay(5)
+
+    stockRet = browser.find_element(By.CLASS_NAME, "table.table--secondary")
+    bodu = stockRet.find_element_by_tag_name("tbody")
+    ret = bodu.find_element(By.CLASS_NAME, "table__row")
+    button = ret.find_element(By.CLASS_NAME, "primary.t-link")
+    browser.execute_script("window.scrollTo(0, 500)")
+    delay(1)
+    button.click()
+
+    el = browser.find_element(By.CLASS_NAME, "value")
+
+    return el.text
 
 
-trade("INTC", 999, TradeType.SHORT, "https://www.marketwatch.com/games/bot-testing")
+def main():
+    browser = webdriver.Firefox()
 
-atexit.register(browser.quit())
+    with open("info.p", "rb") as data:
+        info = pickle.load(data)
+
+    userEmail = info[0]
+    userPassword = info[1]
+
+    # trade(browser, "INTC", 999, TradeType.SHORT, userEmail, userPassword,
+    # "https://www.marketwatch.com/games/bot-testing")
+
+    # updateStats(browser, userEmail, userPassword, "https://www.marketwatch.com/games/tgseblock")
+
+    print(getStockPrice(browser, "INTC", userEmail, userPassword))
+
+    atexit.register(exit_handler)
+
+
+if __name__ == "__main__":
+    main()
+
+
+def exit_handler(browser):
+    browser.quit()
