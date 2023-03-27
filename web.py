@@ -148,9 +148,23 @@ def updateStats(browser, email, password, site='https://www.marketwatch.com/game
         s = stonk.split("\n")
         stats.append(s)
 
+    ls = browser.find_element(By.CLASS_NAME, "list.list--kv")
+    ls2 = ls.find_elements(By.TAG_NAME, "li")
+    ntWrth = int(ls2[0].find_element(By.TAG_NAME, "span").text)
+    fnds = int(ls2[4].find_element(By.TAG_NAME, "span").text)
+    bp = int(ls2[5].find_element(By.TAG_NAME, "span").text)
+
     # Ticker, Shares owned, Type (buy/short), current share price, $change, %change, $ value,
     # total value $change/%change
     print(stats)
+
+    with open("Kai.p", "rb") as data:
+        user = pickle.load(data)
+
+    user.updateInfo(ntWrth, fnds, bp, stats)
+
+    with open("Kai.p", "wb") as data:
+        pickle.dump(user, data)
 
     # TODO: Update info.p and user.py to reflect new stats
 
@@ -180,8 +194,15 @@ def getStockPrice(browser, ticker: str, email, password,
     return el.text
 
 
+browser = webdriver.Firefox()
+
+
+def exit_handler():
+    browser.quit()
+
+
 def main():
-    browser = webdriver.Firefox()
+    atexit.register(exit_handler)
 
     with open("info.p", "rb") as data:
         info = pickle.load(data)
@@ -192,16 +213,10 @@ def main():
     # trade(browser, "INTC", 999, TradeType.SHORT, userEmail, userPassword,
     # "https://www.marketwatch.com/games/bot-testing")
 
-    # updateStats(browser, userEmail, userPassword, "https://www.marketwatch.com/games/tgseblock")
+    updateStats(browser, userEmail, userPassword, "https://www.marketwatch.com/games/bot-testing")
 
-    print(getStockPrice(browser, "INTC", userEmail, userPassword))
-
-    atexit.register(exit_handler)
+    # print(getStockPrice(browser, "INTC", userEmail, userPassword))
 
 
 if __name__ == "__main__":
     main()
-
-
-def exit_handler(browser):
-    browser.quit()

@@ -31,8 +31,8 @@ class User:
 
     def updateInfo(self, netWorth, funds, buyingPower, currentStocks):
 
-        self.funds = funds
         self.netWorth = netWorth
+        self.funds = funds
         self.buyingPower = buyingPower
 
         # Ticker, Shares owned, Type (buy/short), current share price, $change, %change, $ value,
@@ -40,6 +40,8 @@ class User:
         self.stocks = []
         for stock in currentStocks:
             self.stocks.append([stock[0], stock[6]])
+
+    # ############# DEPRECATED #############
 
     def setFunds(self, amount: int, increment: bool):
         if increment:
@@ -70,6 +72,8 @@ class User:
         # iterates over stockList and adds all stock values
         for i in range(len(self.stocks)):
             self.fundsInStock += self.stocks[i][1]
+
+    # ############# DEPRECATED #############
 
     def __str__(self):
         return f"{self.name}'s Stock Profile- \n~~~\nNet Worth- ${self.netWorth} \n" \
